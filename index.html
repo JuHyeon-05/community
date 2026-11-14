@@ -62,7 +62,7 @@
     #wa-proto .footer{border-top:1px solid #e8e5de;padding:22px 6%;font-size:10px;color:#aaa;display:flex;justify-content:space-between}
     #wa-proto .back{border:0;background:none;color:#898579;font-size:12px;padding:0;margin-bottom:25px}
     @media(max-width:600px){#wa-proto .top{height:auto;display:block;padding:15px 18px}#wa-proto .brand{margin-bottom:10px}#wa-proto .nav{gap:16px;overflow:auto}#wa-proto .nav button{padding:8px 0;white-space:nowrap}#wa-proto .content{padding:32px 20px 50px}#wa-proto .homegrid{grid-template-columns:1fr;gap:30px}#wa-proto .quick{grid-template-columns:1fr}#wa-proto .chars{grid-template-columns:repeat(2,1fr)}#wa-proto .profilegrid{grid-template-columns:1fr}#wa-proto .sectionhead{display:block}#wa-proto .footer{display:block;line-height:2}}
-  body{margin:0;background:#fbfaf7}#wa-proto{border:0;border-radius:0;min-height:100vh}#wa-proto .content{box-sizing:content-box;max-width:900px;outline:none}#wa-proto .reading{max-width:42rem}#wa-proto .reading p:last-child{font-size:16px}#wa-proto button:hover{background:#f2f0e9}#wa-proto .btn.dark:hover{background:#373832}button:focus-visible{outline:2px solid #766b48;outline-offset:2px}@media(max-width:760px){#wa-proto .nav{max-width:100%;flex-wrap:wrap;gap:4px 14px}#wa-proto .footer span{display:block}#wa-proto .hero{padding:28px 0 32px}}</style></head><body><div id="wa-proto" class="w-full">
+  body{margin:0;background:#fbfaf7}#wa-proto{border:0;border-radius:0;min-height:100vh}#wa-proto .content{box-sizing:content-box;max-width:900px;outline:none}#wa-proto .reading{max-width:42rem}#wa-proto .reading p:last-child{font-size:16px}#wa-proto button:hover{background:#f2f0e9}#wa-proto .btn.dark:hover{background:#373832}button:focus-visible{outline:2px solid #766b48;outline-offset:2px}@media(max-width:760px){#wa-proto .nav{max-width:100%;flex-wrap:wrap;gap:4px 14px}#wa-proto .footer span{display:block}#wa-proto .hero{padding:28px 0 32px}}dialog{color:#373832;background:#fbfaf7;border:1px solid #d9d5ca;width:min(32rem,90vw);max-height:85vh;box-sizing:border-box;padding:24px}dialog::backdrop{background:#29291f55}dialog label{display:block;font-size:14px;margin:12px 0}dialog input,dialog textarea{width:100%;padding:8px;border:1px solid #c8c4b8;box-sizing:border-box;font:inherit}dialog textarea{min-height:5rem}dialog button,#staff{padding:7px 12px;cursor:pointer}dialog a{color:#474f3d}dialog p{font-size:14px;line-height:1.6}.reading p{white-space:pre-line}</style></head><body><div id="wa-proto" class="w-full">
   
   <header class="top">
     <div class="brand">THE ARCHIVE <span style="color:#aaa;font-size:10px"> / WORLD</span></div>
@@ -75,51 +75,26 @@
     </nav>
   </header>
   <main class="content" id="wa-content" tabindex="-1"></main>
-  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><span>© 2026 · PROTOTYPE V1.0</span></footer>
+  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><button class="btn" id="staff">운영진 로그인</button><span>© 2026 · PROTOTYPE V1.0</span></footer>
 </div>
+<dialog id="panel" aria-labelledby="panel-title"><form id="staff-form"><h2 id="panel-title"></h2><div id="fields"></div><p id="feedback" role="status"></p><button type="submit" id="submit"></button> <button type="button" id="close">닫기</button></form></dialog>
 <script>
 (()=>{
  const root=document.getElementById('wa-proto');if(root.dataset.ready)return;root.dataset.ready='1';
  const content=root.querySelector('#wa-content');
- let page='home',filter='전체',char='서린';
- const notices=[
-  ['중요','기록 보관소 이용 안내','2026.11.12'],
-  ['업데이트','세계관 문서가 추가되었습니다.','2026.11.08'],
-  ['안내','캐릭터 도감 공개 안내','2026.11.01']
- ];
- const worlds=[
-  ['세계의 기원','기초 설정','세계가 시작된 곳과 오래된 기록에 관한 문서입니다.'],
-  ['대륙과 지역','지리','각 지역의 특징과 주요 거점에 관한 문서입니다.'],
-  ['조직과 세력','사회','세계에 존재하는 여러 조직과 세력에 관한 문서입니다.'],
-  ['역사와 연대기','역사','시대별 주요 사건을 정리한 기록입니다.'],
-  ['능력 체계','설정','이 세계에서 통용되는 능력과 규칙에 관한 문서입니다.']
- ];
- const chars=[
-  ['서린','북부 감찰단','인물 / 감찰관','서'],
-  ['이안','중앙 연구원','인물 / 연구원','이'],
-  ['유하','독립 세력','인물 / 방랑자','유'],
-  ['라온','남부 연합','인물 / 기사','라'],
-  ['세아','기록 관리국','인물 / 기록관','세'],
-  ['도윤','동부 경비대','인물 / 경비대','도']
- ];
- const archives=[
-  ['제1기록 — 오래된 서약','연표','기원 이전'],
-  ['북부 관측 보고서','보고서','2024.03.18'],
-  ['잊힌 도시의 기록','문서','2023.09.02'],
-  ['인물 관계 기록','자료','2022.12.11']
- ];
+ let page='home',filter='전체',char=0;
+ const notices=[], worlds=[], chars=[], archives=[], biographies=[];
  function button(label,action,cls='btn'){return `<button class="${cls}" data-action="${action}">${label}</button>`}
- const biographies=[["지도에 없는 길도 누군가는 걸었어요.","빛바랜 외투 안쪽에 작은 나침반을 꿰매 두었다.","날씨가 험할수록 말수가 줄고 기록은 길어진다.","북부의 마지막 봉화대에서 전령을 기다린 뒤 감찰단에 들어왔다.","눈에 덮인 길에서도 반사되는 소리로 이정표를 찾아낸다."],["같은 종도 두 번 똑같이 울리진 않아요.","손끝에 늘 푸른 기록용 잉크가 묻어 있다.","단정하기 전에 동료의 관측값부터 묻는다.","수리공의 아들로 자라 깨진 종의 잔향을 연구하게 되었다.","종의 파편에서 마지막 울림을 분리해 낸다."],["물길이 바뀌면 지도도 다시 그리면 돼.","말린 갈대를 모자에 꽂고 다닌다.","낯선 나루에서도 먼저 찻물을 올린다.","물이 빠질 때 드러나는 도시를 찾아 강줄기를 따라 걷는다.","물새의 발자국으로 다음 썰물의 깊이를 짐작한다."],["다리가 다시 열릴 때까지 여기 있겠네.","낡은 망토 끝을 나룻줄로 묶었다.","약속한 자리를 좀처럼 떠나지 않는다.","남부의 큰물이 지나간 뒤 나루 복구를 맡았다.","물살을 읽고 끊어진 다리 사이로 구명줄을 건다."],["두 기록이 다르면 둘 다 남겨 주세요.","회색 소매에 작은 연필 세 자루를 꽂았다.","증언을 받아 적을 때는 긴 침묵도 기다린다.","옛 서약의 필사본을 대조하며 기록 관리국에서 일하기 시작했다.","필체와 종이의 결로 흩어진 문서의 원래 순서를 찾는다."],["동쪽 문은 첫 배가 닿을 때 열립니다.","허리에 닳은 황동 열쇠를 차고 있다.","순찰을 마치면 나루의 빈 배까지 한 번 더 센다.","안개 속에서 길을 잃은 전령을 구한 뒤 동부 성문의 야간 경비를 맡았다.","발소리의 간격만으로 다리 위의 인원수를 가늠한다."]];
  function render(){
   if(page==='home')content.innerHTML=`
    <div class="hero"><div class="eyebrow">An encyclopedia of our world</div><h1>기록은 세계를<br>이해하는 또 하나의 방법.</h1><div class="intro">이곳은 하나의 세계와 그 안에 살아가는 사람들에 관한 기록을 모아둔 공간입니다. 천천히 둘러보며 이곳의 이야기를 발견해 보세요.</div>${button('세계관 둘러보기','world','btn dark')}　${button('캐릭터 도감','characters')}</div>
    <div class="homegrid"><section><div class="eyebrow">Latest notices</div><h2 style="margin-top:9px">새로운 소식</h2>${notices.map((n,i)=>`<div class="notice-row"><button data-action="notice-${i}">${n[1]}</button><time>${n[2]}</time></div>`).join('')}</section><section><div class="eyebrow">Introduction</div><h2 style="margin-top:9px">아카이브 안내</h2><p>세계관의 기초부터 인물들의 기록까지, 다양한 문서를 한곳에서 열람할 수 있습니다.</p><div class="line"></div><div class="eyebrow">Recently added</div><p style="color:#555">새로운 세계관 문서 3건<br>캐릭터 프로필 2건</p></section></div>
    <div class="quick"><button data-action="world"><strong>세계관 ↗</strong><span>세계의 구조와 설정</span></button><button data-action="characters"><strong>인물 ↗</strong><span>이 세계에 살아가는 사람들</span></button><button data-action="archive"><strong>사건 연표 ↗</strong><span>사건과 자료의 기록</span></button></div>`;
   if(page==='notice')content.innerHTML=`<div class="sectionhead"><div><div class="eyebrow">News & Announcements</div><h1>공지사항</h1><p>홈페이지의 소식과 운영 관련 안내를 확인할 수 있습니다.</p></div></div><div class="doclist">${notices.map((n,i)=>`<div class="doc"><button data-action="notice-${i}"><small>${n[0]}</small><strong>${n[1]}</strong></button><time>${n[2]}</time></div>`).join('')}</div>`;
-  if(page==='world')content.innerHTML=`<div class="eyebrow">World encyclopedia</div><h1>세계관</h1><p>이 세계를 구성하는 배경과 규칙, 역사에 관한 기록입니다.</p><div class="filters">${['전체','기초 설정','지리','사회','역사','설정'].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${worlds.filter(w=>filter==='전체'||w[1]===filter).map((w,i)=>`<div class="doc"><button data-action="world-${worlds.indexOf(w)}"><small>${w[1]}</small><strong>${w[0]}</strong><p style="margin:6px 0 0;font-size:11px">${w[2]}</p></button><span class="muted">↗</span></div>`).join('')}</div>`;
-  if(page==='characters')content.innerHTML=`<div class="eyebrow">Character index</div><h1>인물 도감</h1><p>각자의 이야기를 가진 인물들의 기록을 모았습니다.</p><div class="filters">${['전체',...chars.map(c=>c[1])].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="chars">${chars.filter(c=>filter==='전체'||c[1]===filter).map(c=>`<button class="char" data-char="${c[0]}"><span class="initial">${c[3]}</span><strong>${c[0]}</strong><small>${c[1]} · ${c[2]}</small></button>`).join('')}</div>`;
-  if(page==='profile'){const c=chars.find(x=>x[0]===char)||chars[0];const bio=biographies[chars.indexOf(c)];content.innerHTML=`<button class="back" data-action="characters">← 인물 도감으로</button><div class="profilegrid"><aside class="profilebox"><div class="eyebrow">Character profile</div><div class="initial" style="width:66px;height:66px;font-size:24px;margin:20px 0">${c[3]}</div><h2>${c[0]}</h2><p>${c[2]}</p><dl><dt>소속</dt><dd>${c[1]}</dd><dt>분류</dt><dd>주요 인물</dd><dt>상태</dt><dd>활동 중</dd></dl></aside><section><div class="eyebrow">Profile / ${String(chars.indexOf(c)+1).padStart(3,"0")}</div><h1>${c[0]}</h1><p style="font-family:Georgia,serif;font-size:17px">“${bio[0]}”</p><div class="line"></div><div class="profiletext"><h3>외관</h3><p>${bio[1]}</p></div><div class="profiletext"><h3>성격</h3><p>${bio[2]}</p></div><div class="profiletext"><h3>배경</h3><p>${bio[3]}</p></div><div class="profiletext"><h3>능력 및 기타</h3><p>${bio[4]}</p></div></section></div>`}
-  if(page==='archive')content.innerHTML=`<div class="eyebrow">Historical records</div><h1>사건 연표</h1><p>사건과 자료, 시간의 흐름을 따라 정리한 기록입니다.</p><div class="filters">${['전체','연표','보고서','문서','자료'].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${archives.filter(a=>filter==='전체'||a[1]===filter).map((a,i)=>`<div class="doc"><button data-action="archive-${archives.indexOf(a)}"><small>${a[1]}</small><strong>${a[0]}</strong></button><time>${a[2]}</time></div>`).join('')}</div>`;
+  if(page==='world')content.innerHTML=`<div class="eyebrow">World encyclopedia</div><h1>세계관</h1><p>이 세계를 구성하는 배경과 규칙, 역사에 관한 기록입니다.</p><div class="filters">${['전체',...new Set(worlds.map(w=>w[1]))].map(f=>`<button class="${escapeText(filter)===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${worlds.filter(w=>filter==='전체'||w[1]===escapeText(filter)).map((w,i)=>`<div class="doc"><button data-action="world-${worlds.indexOf(w)}"><small>${w[1]}</small><strong>${w[0]}</strong><p style="margin:6px 0 0;font-size:11px">${w[2]}</p></button><span class="muted">↗</span></div>`).join('')}</div>`;
+  if(page==='characters')content.innerHTML=`<div class="eyebrow">Character index</div><h1>인물 도감</h1><p>각자의 이야기를 가진 인물들의 기록을 모았습니다.</p><div class="filters">${['전체',...new Set(chars.map(c=>c[1]))].map(f=>`<button class="${escapeText(filter)===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="chars">${chars.filter(c=>filter==='전체'||c[1]===escapeText(filter)).map(c=>`<button class="char" data-char="${chars.indexOf(c)}"><span class="initial">${c[3]}</span><strong>${c[0]}</strong><small>${c[1]} · ${c[2]}</small></button>`).join('')}</div>`;
+  if(page==='profile'){const c=chars[char];const bio=biographies[chars.indexOf(c)];content.innerHTML=`<button class="back" data-action="characters">← 인물 도감으로</button><div class="profilegrid"><aside class="profilebox"><div class="eyebrow">Character profile</div><div class="initial" style="width:66px;height:66px;font-size:24px;margin:20px 0">${c[3]}</div><h2>${c[0]}</h2><p>${c[2]}</p><dl><dt>소속</dt><dd>${c[1]}</dd><dt>분류</dt><dd>주요 인물</dd><dt>상태</dt><dd>활동 중</dd></dl></aside><section><div class="eyebrow">Profile / ${String(chars.indexOf(c)+1).padStart(3,"0")}</div><h1>${c[0]}</h1><p style="font-family:Georgia,serif;font-size:17px">“${bio[0]}”</p><div class="line"></div><div class="profiletext"><h3>외관</h3><p>${bio[1]}</p></div><div class="profiletext"><h3>성격</h3><p>${bio[2]}</p></div><div class="profiletext"><h3>배경</h3><p>${bio[3]}</p></div><div class="profiletext"><h3>능력 및 기타</h3><p>${bio[4]}</p></div></section></div>`}
+  if(page==='archive')content.innerHTML=`<div class="eyebrow">Historical records</div><h1>사건 연표</h1><p>사건과 자료, 시간의 흐름을 따라 정리한 기록입니다.</p><div class="filters">${['전체',...new Set(archives.map(a=>a[1]))].map(f=>`<button class="${escapeText(filter)===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${archives.filter(a=>filter==='전체'||a[1]===escapeText(filter)).map((a,i)=>`<div class="doc"><button data-action="archive-${archives.indexOf(a)}"><small>${a[1]}</small><strong>${a[0]}</strong></button><time>${a[2]}</time></div>`).join('')}</div>`;
  }
  function navigate(section, id) {
   const path = section + (id === undefined ? '' : '/' + id);
@@ -128,41 +103,35 @@
  }
  const collections = {notice:notices, world:worlds, characters:chars, archive:archives};
  const sectionNames = {notice:'공지사항',world:'세계관',characters:'인물 도감',archive:'사건 연표'};
- const readings = {
-  notice:[
-   '처음 방문했다면 세계관의 「세계의 기원」부터 읽어 보세요. 각 지역에서 만나는 사람들의 이야기는 인물 도감에서 이어집니다.',
-   '대륙과 지역, 조직과 세력, 능력 체계 문서를 공개했습니다. 세계관 메뉴에서 분류를 선택해 관심 있는 기록을 찾아보세요.',
-   '서린을 비롯한 여섯 인물의 기록을 공개합니다. 카드에서 이름을 선택하면 각 인물의 소속과 지난 행적을 읽을 수 있습니다.'
-  ],
-  world:[
-   '가장 오래된 지도에는 바다 한가운데 점 하나만 남아 있다. 북부에서는 그것을 첫 등불이라 부른다. 기록 관리국이 보관한 세 장의 필사본은 모두 그 등불을 그린 자리에서 시작한다.',
-   '북부 관측소에서 남쪽으로 내려오면 옛 수로가 두 갈래로 갈라진다. 서쪽 길은 중앙 연구원으로, 동쪽 길은 해마다 물때에 따라 위치가 바뀌는 나루로 이어진다.',
-   '북부 감찰단은 길과 봉화대를 지키고, 중앙 연구원은 그곳에서 채집한 소리를 분석한다. 기록 관리국에는 두 기관이 같은 사건에 대해 서로 다르게 작성한 보고서도 함께 남는다.',
-   '옛 서약 이후 길마다 봉화가 세워졌다. 북부에서 마지막 불이 꺼진 해, 관측관들은 처음으로 불빛 대신 종소리를 이용해 겨울 전령의 귀환을 알렸다.',
-   '오래 사용한 물건에는 주변의 소리가 희미하게 남는다. 연구원들은 이 현상을 잔향이라 부른다. 잔향은 한 번 꺼내 들으면 흐려져, 첫 청취에는 반드시 두 명의 기록자가 참석한다.'
-  ],
-  archive:[
-   '서약의 원본은 전해지지 않는다. 나루터 돌기둥에 새긴 사본에서 한 문장을 읽을 수 있다. “돌아오는 이가 있는 동안 맞은편의 등불을 끄지 않는다.”',
-   '03시 12분. 북쪽 능선에서 세 차례 종소리를 들었다. 바람은 남쪽에서 불었다. 서린은 관측 일지의 빈칸에 마지막 울림이 끝난 시간을 따로 적었다.',
-   '물이 빠진 날에만 옛 도시의 문턱이 드러난다. 유하는 성문 바깥에서 주운 흰 돌에 창문 무늬가 새겨져 있었다고 기록했다.',
-   '서린이 보낸 종의 파편은 이안이 분석하고 세아가 등록했다. 세 사람이 붙인 이름은 각각 경계종, 저주파 시료, 북부 제17호다. 보관함에는 세 이름이 모두 적혀 있다.'
-  ]
- };
+ const readings={notice:[],world:[],archive:[]};
  function openRoute() {
   const [section,id] = location.hash.slice(1).split('/');
   const list = Object.hasOwn(collections,section) ? collections[section] : null;
   const parent = list ? section : 'home';
-  const item = list && /^\d+$/.test(id) ? list[Number(id)] : null;
+  const index = list ? records[parent].findIndex(record=>record.id===id) : -1;
+  const item = list && list[index];
   if(parent !== currentSection) filter='전체';
   currentSection=parent;
   page=parent;
-  if(item && parent==='characters'){char=item[0]; page='profile';}
+  if(item && parent==='characters'){char=index; page='profile';}
   render();
   if(item && parent!=='characters'){
    const title=parent==='notice'?item[1]:item[0];
    const category=parent==='notice'?item[0]:item[1];
    content.innerHTML=button('← '+sectionNames[parent]+' 목록',parent,'back')+
-    '<article class="reading"><div class="eyebrow">'+sectionNames[parent]+' / '+category+'</div><h1>'+title+'</h1><p>'+item[2]+'</p><div class="line"></div><p>'+readings[parent][Number(id)]+'</p></article>';
+    '<article class="reading"><div class="eyebrow">'+sectionNames[parent]+' / '+category+'</div><h1>'+title+'</h1><p>'+item[2]+'</p><div class="line"></div><p>'+readings[parent][index]+'</p></article>';
+  }
+  if(token && list){
+   const controls=document.createElement('div');
+   controls.className='filters';
+   const actions=item?['수정','삭제']:['새 글 작성'];
+   for(const action of actions){
+    const control=document.createElement('button');
+    control.textContent=action;
+    control.onclick=()=>openEditor(parent,item?id:null,action);
+    controls.append(control);
+   }
+   content.prepend(controls);
   }
   for(const btn of root.querySelectorAll('.nav button')){
    btn.classList.toggle('active',btn.dataset.page===parent);
@@ -176,12 +145,127 @@
  root.addEventListener('click',event=>{
   const b=event.target.closest('button');if(!b)return;
   if(b.dataset.page)navigate(b.dataset.page);
-  else if(b.dataset.char)navigate('characters',chars.findIndex(c=>c[0]===b.dataset.char));
-  else if(b.dataset.filter){filter=b.dataset.filter;render();Array.from(content.querySelectorAll('[data-filter]')).find(el=>el.dataset.filter===filter)?.focus();}
-  else if(b.dataset.action){const [section,id]=b.dataset.action.split('-');navigate(section,id);}
+  else if(b.dataset.char)navigate('characters',records.characters[Number(b.dataset.char)].id);
+  else if(b.dataset.filter){filter=b.textContent;openRoute();Array.from(content.querySelectorAll('[data-filter]')).find(el=>el.dataset.escapeText(filter)===filter)?.focus();}
+  else if(b.dataset.action){const [section,id]=b.dataset.action.split('-');navigate(section,id===undefined?undefined:records[section][Number(id)].id);}
  });
  window.addEventListener('hashchange',openRoute);
- openRoute();
+
+ const snapshot={"notice":[{"id":"0","fields":["중요","기록 보관소 이용 안내","2026.11.12","처음 방문했다면 세계관의 「세계의 기원」부터 읽어 보세요. 각 지역에서 만나는 사람들의 이야기는 인물 도감에서 이어집니다."]},{"id":"1","fields":["업데이트","세계관 문서가 추가되었습니다.","2026.11.08","대륙과 지역, 조직과 세력, 능력 체계 문서를 공개했습니다. 세계관 메뉴에서 분류를 선택해 관심 있는 기록을 찾아보세요."]},{"id":"2","fields":["안내","캐릭터 도감 공개 안내","2026.11.01","서린을 비롯한 여섯 인물의 기록을 공개합니다. 카드에서 이름을 선택하면 각 인물의 소속과 지난 행적을 읽을 수 있습니다."]}],"world":[{"id":"0","fields":["세계의 기원","기초 설정","세계가 시작된 곳과 오래된 기록에 관한 문서입니다.","가장 오래된 지도에는 바다 한가운데 점 하나만 남아 있다. 북부에서는 그것을 첫 등불이라 부른다. 기록 관리국이 보관한 세 장의 필사본은 모두 그 등불을 그린 자리에서 시작한다."]},{"id":"1","fields":["대륙과 지역","지리","각 지역의 특징과 주요 거점에 관한 문서입니다.","북부 관측소에서 남쪽으로 내려오면 옛 수로가 두 갈래로 갈라진다. 서쪽 길은 중앙 연구원으로, 동쪽 길은 해마다 물때에 따라 위치가 바뀌는 나루로 이어진다."]},{"id":"2","fields":["조직과 세력","사회","세계에 존재하는 여러 조직과 세력에 관한 문서입니다.","북부 감찰단은 길과 봉화대를 지키고, 중앙 연구원은 그곳에서 채집한 소리를 분석한다. 기록 관리국에는 두 기관이 같은 사건에 대해 서로 다르게 작성한 보고서도 함께 남는다."]},{"id":"3","fields":["역사와 연대기","역사","시대별 주요 사건을 정리한 기록입니다.","옛 서약 이후 길마다 봉화가 세워졌다. 북부에서 마지막 불이 꺼진 해, 관측관들은 처음으로 불빛 대신 종소리를 이용해 겨울 전령의 귀환을 알렸다."]},{"id":"4","fields":["능력 체계","설정","이 세계에서 통용되는 능력과 규칙에 관한 문서입니다.","오래 사용한 물건에는 주변의 소리가 희미하게 남는다. 연구원들은 이 현상을 잔향이라 부른다. 잔향은 한 번 꺼내 들으면 흐려져, 첫 청취에는 반드시 두 명의 기록자가 참석한다."]}],"characters":[{"id":"0","fields":["서린","북부 감찰단","인물 / 감찰관","지도에 없는 길도 누군가는 걸었어요.","빛바랜 외투 안쪽에 작은 나침반을 꿰매 두었다.","날씨가 험할수록 말수가 줄고 기록은 길어진다.","북부의 마지막 봉화대에서 전령을 기다린 뒤 감찰단에 들어왔다.","눈에 덮인 길에서도 반사되는 소리로 이정표를 찾아낸다."]},{"id":"1","fields":["이안","중앙 연구원","인물 / 연구원","같은 종도 두 번 똑같이 울리진 않아요.","손끝에 늘 푸른 기록용 잉크가 묻어 있다.","단정하기 전에 동료의 관측값부터 묻는다.","수리공의 아들로 자라 깨진 종의 잔향을 연구하게 되었다.","종의 파편에서 마지막 울림을 분리해 낸다."]},{"id":"2","fields":["유하","독립 세력","인물 / 방랑자","물길이 바뀌면 지도도 다시 그리면 돼.","말린 갈대를 모자에 꽂고 다닌다.","낯선 나루에서도 먼저 찻물을 올린다.","물이 빠질 때 드러나는 도시를 찾아 강줄기를 따라 걷는다.","물새의 발자국으로 다음 썰물의 깊이를 짐작한다."]},{"id":"3","fields":["라온","남부 연합","인물 / 기사","다리가 다시 열릴 때까지 여기 있겠네.","낡은 망토 끝을 나룻줄로 묶었다.","약속한 자리를 좀처럼 떠나지 않는다.","남부의 큰물이 지나간 뒤 나루 복구를 맡았다.","물살을 읽고 끊어진 다리 사이로 구명줄을 건다."]},{"id":"4","fields":["세아","기록 관리국","인물 / 기록관","두 기록이 다르면 둘 다 남겨 주세요.","회색 소매에 작은 연필 세 자루를 꽂았다.","증언을 받아 적을 때는 긴 침묵도 기다린다.","옛 서약의 필사본을 대조하며 기록 관리국에서 일하기 시작했다.","필체와 종이의 결로 흩어진 문서의 원래 순서를 찾는다."]},{"id":"5","fields":["도윤","동부 경비대","인물 / 경비대","동쪽 문은 첫 배가 닿을 때 열립니다.","허리에 닳은 황동 열쇠를 차고 있다.","순찰을 마치면 나루의 빈 배까지 한 번 더 센다.","안개 속에서 길을 잃은 전령을 구한 뒤 동부 성문의 야간 경비를 맡았다.","발소리의 간격만으로 다리 위의 인원수를 가늠한다."]}],"archive":[{"id":"0","fields":["제1기록 — 오래된 서약","연표","기원 이전","서약의 원본은 전해지지 않는다. 나루터 돌기둥에 새긴 사본에서 한 문장을 읽을 수 있다. “돌아오는 이가 있는 동안 맞은편의 등불을 끄지 않는다.”"]},{"id":"1","fields":["북부 관측 보고서","보고서","2024.03.18","03시 12분. 북쪽 능선에서 세 차례 종소리를 들었다. 바람은 남쪽에서 불었다. 서린은 관측 일지의 빈칸에 마지막 울림이 끝난 시간을 따로 적었다."]},{"id":"2","fields":["잊힌 도시의 기록","문서","2023.09.02","물이 빠진 날에만 옛 도시의 문턱이 드러난다. 유하는 성문 바깥에서 주운 흰 돌에 창문 무늬가 새겨져 있었다고 기록했다."]},{"id":"3","fields":["인물 관계 기록","자료","2022.12.11","서린이 보낸 종의 파편은 이안이 분석하고 세아가 등록했다. 세 사람이 붙인 이름은 각각 경계종, 저주파 시료, 북부 제17호다. 보관함에는 세 이름이 모두 적혀 있다."]}]};
+ const labels={
+  notice:['분류','제목','게시일','본문'],
+  world:['제목','분류','요약','본문'],
+  archive:['제목','분류','시점','본문'],
+  characters:['이름','소속','역할','한 줄 소개','외관','성격','배경','능력 및 기타']
+ };
+ const api='https://api.github.com/repos/JuHyeon-05/community';
+ const file=api+'/contents/records.json';
+ const panel=document.querySelector('#panel'), form=document.querySelector('#staff-form');
+ const fields=document.querySelector('#fields'), feedback=document.querySelector('#feedback');
+ const submit=document.querySelector('#submit'), close=document.querySelector('#close');
+ const staff=document.querySelector('#staff');
+ let token='',records,revision='',busy=false;
+ function escapeText(value){
+  return value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
+ }
+ function applyRecords(data){
+  for(const section of Object.keys(labels)){
+   const seen=new Set();
+   if(!Array.isArray(data[section]) || !data[section].every(row=>{
+    if(!row || typeof row.id!=='string' || !/^[\w-]+$/.test(row.id) || seen.has(row.id) || !Array.isArray(row.fields) || row.fields.length!==labels[section].length || !row.fields.every(v=>typeof v==='string'))return false;
+    seen.add(row.id);return true;
+   }))throw Error('자료 형식을 확인해 주세요.');
+  }
+  records=data;
+  for(const section of Object.keys(labels)){
+   const rows=data[section].map(row=>row.fields.map(escapeText));
+   const summaries=rows.map(row=>row.slice(0,3));
+   if(section==='characters'){
+    summaries.forEach((row,i)=>row.push(escapeText(Array.from(data.characters[i].fields[0])[0]||'')));
+    biographies.splice(0,biographies.length,...rows.map(row=>row.slice(3)));
+   }else readings[section]=rows.map(row=>row[3]);
+   collections[section].splice(0,collections[section].length,...summaries);
+  }
+  openRoute();
+ }
+ function field(label,value,multi=false){
+  const wrap=document.createElement('label'), input=document.createElement(multi?'textarea':'input');
+  wrap.textContent=label;input.value=value;wrap.append(input);fields.append(wrap);return input;
+ }
+ function show(title,action){
+  fields.replaceChildren();feedback.textContent='';document.querySelector('#panel-title').textContent=title;
+  submit.textContent=action;panel.showModal();
+ }
+ function lock(value){busy=value;submit.disabled=value;close.disabled=value;}
+ close.onclick=()=>panel.close();
+ panel.oncancel=e=>{if(busy)e.preventDefault()};
+ panel.onclose=()=>{fields.replaceChildren();form.onsubmit=null};
+ async function request(url,key,options={}){
+  const res=await fetch(url,{...options,cache:'no-store',redirect:'error',headers:{Authorization:'Bearer '+key,Accept:'application/vnd.github+json',...(options.body?{'Content-Type':'application/json'}:{})}});
+  if(!res.ok){
+   const messages={401:'인증이 만료되었거나 토큰이 올바르지 않습니다.',403:'저장소 권한과 토큰의 Contents 쓰기 권한을 확인해 주세요.',404:'저장소와 토큰의 접근 범위를 확인해 주세요.',409:'다른 변경이 먼저 저장되었습니다. 입력 내용을 복사한 뒤 다시 로그인해 최신 글을 확인하세요.',422:'GitHub가 변경을 거절했습니다. 최신 내용을 확인하고 다시 시도해 주세요.'};
+   throw Error(messages[res.status]||'GitHub 요청을 완료하지 못했습니다.');
+  }
+  return res.json();
+ }
+ function onSubmit(work){
+  form.onsubmit=async e=>{
+   e.preventDefault();if(busy)return;lock(true);feedback.textContent='처리 중…';
+   try{await work();panel.close()}catch(error){feedback.textContent=error.message}finally{lock(false)}
+  };
+ }
+ staff.onclick=()=>{
+  if(token){token='';revision='';staff.textContent='운영진 로그인';openRoute();return}
+  show('운영진 로그인','로그인');
+  fields.innerHTML='<p>이 저장소에 쓰기 권한이 있는 운영진의 GitHub 토큰으로 로그인하세요. 토큰은 이 탭에서만 사용하며 새로고침하면 로그아웃됩니다.</p><p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub에서 토큰 만들기</a> · community 저장소만 선택하고 Contents 권한을 Read and write로 설정하세요.</p>';
+  const input=field('GitHub 개인 액세스 토큰','');input.type='password';input.required=true;input.autocomplete='off';input.focus();
+  onSubmit(async()=>{
+   const key=input.value.trim();
+   const repo=await request(api,key);
+   if(!repo.permissions?.push)throw Error('이 계정에는 운영진 쓰기 권한이 없습니다.');
+   const latest=await request(file+'?ref=main',key);
+   const data=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(latest.content),c=>c.charCodeAt(0))));
+   applyRecords(data);revision=latest.sha;token=key;staff.textContent='운영진 로그아웃';openRoute();
+  });
+ };
+ function openEditor(section,id,action){
+  if(!token)return;
+  const row=records[section].find(item=>item.id===id);
+  show(sectionNames[section]+' · '+action,action==='삭제'?'삭제하기':'공개 저장');
+  const deleting=action==='삭제';
+  let inputs=[];
+  if(deleting)fields.textContent='「'+row.fields[section==='notice'?1:0]+'」 글을 삭제할까요?';
+  else inputs=labels[section].map((name,i)=>{
+   const input=field(name,row?.fields[i]||'',i>=3);input.required=i<4;return input;
+  });
+  onSubmit(async()=>{
+   const updated=structuredClone(records);
+   const list=updated[section], index=list.findIndex(entry=>entry.id===id);
+   let target=id;
+   if(deleting)list.splice(index,1);
+   else{
+    const values=inputs.map(input=>input.value.trim());
+    if(values.slice(0,4).some(value=>!value))throw Error('필수 항목을 입력해 주세요.');
+    target=id||crypto.randomUUID();
+    const record={id:target,fields:values};
+    if(row)list[index]=record;else list.unshift(record);
+   }
+   const bytes=new TextEncoder().encode(JSON.stringify(updated,null,2)+'\n');
+   if(bytes.length>950000)throw Error('전체 기록의 저장 용량을 초과했습니다.');
+   const result=await request(file,token,{method:'PUT',body:JSON.stringify({branch:'main',sha:revision,message:sectionNames[section]+' '+action,content:btoa(Array.from(bytes,c=>String.fromCharCode(c)).join(''))})});
+   revision=result.content.sha;filter='전체';applyRecords(updated);navigate(section,deleting?undefined:target);
+  });
+ }
+ applyRecords(snapshot);
+ if(location.protocol!=='file:'){
+  fetch('./records.json',{cache:'no-cache'}).then(response=>{
+   if(!response.ok)throw Error();return response.json();
+  }).then(data=>{if(!token)applyRecords(data)}).catch(()=>{
+   const warning=document.createElement('p');warning.textContent='최신 글을 불러오지 못했습니다. 기본 시안을 표시합니다.';root.querySelector('.footer').prepend(warning);
+  });
+ }
+ staff.hidden=location.origin!=='https://juhyeon-05.github.io' || !location.pathname.startsWith('/community/');
+
 })();
 </script>
 </body></html>
