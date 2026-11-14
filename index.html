@@ -75,7 +75,7 @@
     </nav>
   </header>
   <main class="content" id="wa-content" tabindex="-1"></main>
-  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><a class="btn" id="staff" href="https://script.google.com/macros/s/AKfycbyFUe8njkZTEV_1U4JGQV5FyBPL_aqi5WdUeuoCdDvlxr_aiRYKEyMHbwpfKLzxhoFfVg/exec" target="_blank" rel="noopener noreferrer" title="Google 계정으로 운영진 편집 화면 열기">운영진 로그인 ↗</a><span>© 2026 · PROTOTYPE V1.0</span></footer>
+  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><a class="btn" id="staff" href="https://script.google.com/macros/s/AKfycby86BBU30ItqBYS_r0AuMMc7QFIG4Z5852aYHeHjDazA6A1H-WzEPddnlhtfKx4ISBvIQ/exec" target="_blank" rel="noopener noreferrer" title="Google 계정으로 운영진 편집 화면 열기">운영진 로그인 ↗</a><span>© 2026 · PROTOTYPE V1.0</span></footer>
 </div>
 
 <script>
@@ -172,7 +172,7 @@
  }
  applyRecords(snapshot);
  if(location.protocol!=='file:'){
-  fetch('https://script.google.com/macros/s/AKfycbxwB07jfB0SoQ-6MOVmF3jO_knHi7H8KY9w_yXX8wu5lWumWXpgwFssgLZOS037scfQrQ/exec',{credentials:'omit'}).then(response=>{
+  fetch('https://script.google.com/macros/s/AKfycbwBJzoaCelMWKAfPuQqFW8rvhB8booUS9DAVGS4k2YS5VWuzWU2KCO3ZlJEOO-71iHcCQ/exec',{credentials:'omit'}).then(response=>{
    if(!response.ok)throw Error();return response.json();
   }).then(data=>{applyRecords(data)}).catch(()=>{
    const warning=document.createElement('p');warning.textContent='최신 글을 불러오지 못했습니다. 기본 시안을 표시합니다. 새로고침해 다시 시도해 주세요.';root.querySelector('.footer').prepend(warning);
