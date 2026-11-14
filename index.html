@@ -75,9 +75,9 @@
     </nav>
   </header>
   <main class="content" id="wa-content" tabindex="-1"></main>
-  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><button class="btn" id="staff">운영진 로그인</button><span>© 2026 · PROTOTYPE V1.0</span></footer>
+  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><a class="btn" id="staff" href="https://docs.google.com/spreadsheets/d/1yyDawgyRAHf-Ndcy98-jqS8Gpf4Z8l3vmh5luqKuq2o/edit" target="_blank" rel="noopener noreferrer" title="Google 계정으로 운영진 시트 열기">운영진 로그인 ↗</a><span>© 2026 · PROTOTYPE V1.0</span></footer>
 </div>
-<dialog id="panel" aria-labelledby="panel-title"><form id="staff-form"><h2 id="panel-title"></h2><div id="fields"></div><p id="feedback" role="status"></p><button type="submit" id="submit"></button> <button type="button" id="close">닫기</button></form></dialog>
+
 <script>
 (()=>{
  const root=document.getElementById('wa-proto');if(root.dataset.ready)return;root.dataset.ready='1';
@@ -121,18 +121,6 @@
    content.innerHTML=button('← '+sectionNames[parent]+' 목록',parent,'back')+
     '<article class="reading"><div class="eyebrow">'+sectionNames[parent]+' / '+category+'</div><h1>'+title+'</h1><p>'+item[2]+'</p><div class="line"></div><p>'+readings[parent][index]+'</p></article>';
   }
-  if(token && list){
-   const controls=document.createElement('div');
-   controls.className='filters';
-   const actions=item?['수정','삭제']:['새 글 작성'];
-   for(const action of actions){
-    const control=document.createElement('button');
-    control.textContent=action;
-    control.onclick=()=>openEditor(parent,item?id:null,action);
-    controls.append(control);
-   }
-   content.prepend(controls);
-  }
   for(const btn of root.querySelectorAll('.nav button')){
    btn.classList.toggle('active',btn.dataset.page===parent);
    if(btn.dataset.page===parent)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current');
@@ -158,13 +146,7 @@
   archive:['제목','분류','시점','본문'],
   characters:['이름','소속','역할','한 줄 소개','외관','성격','배경','능력 및 기타']
  };
- const api='https://api.github.com/repos/JuHyeon-05/community';
- const file=api+'/contents/records.json';
- const panel=document.querySelector('#panel'), form=document.querySelector('#staff-form');
- const fields=document.querySelector('#fields'), feedback=document.querySelector('#feedback');
- const submit=document.querySelector('#submit'), close=document.querySelector('#close');
- const staff=document.querySelector('#staff');
- let token='',records,revision='',busy=false;
+ let records;
  function escapeText(value){
   return value.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
  }
@@ -188,83 +170,14 @@
   }
   openRoute();
  }
- function field(label,value,multi=false){
-  const wrap=document.createElement('label'), input=document.createElement(multi?'textarea':'input');
-  wrap.textContent=label;input.value=value;wrap.append(input);fields.append(wrap);return input;
- }
- function show(title,action){
-  fields.replaceChildren();feedback.textContent='';document.querySelector('#panel-title').textContent=title;
-  submit.textContent=action;panel.showModal();
- }
- function lock(value){busy=value;submit.disabled=value;close.disabled=value;}
- close.onclick=()=>panel.close();
- panel.oncancel=e=>{if(busy)e.preventDefault()};
- panel.onclose=()=>{fields.replaceChildren();form.onsubmit=null};
- async function request(url,key,options={}){
-  const res=await fetch(url,{...options,cache:'no-store',redirect:'error',headers:{Authorization:'Bearer '+key,Accept:'application/vnd.github+json',...(options.body?{'Content-Type':'application/json'}:{})}});
-  if(!res.ok){
-   const messages={401:'인증이 만료되었거나 토큰이 올바르지 않습니다.',403:'저장소 권한과 토큰의 Contents 쓰기 권한을 확인해 주세요.',404:'저장소와 토큰의 접근 범위를 확인해 주세요.',409:'다른 변경이 먼저 저장되었습니다. 입력 내용을 복사한 뒤 다시 로그인해 최신 글을 확인하세요.',422:'GitHub가 변경을 거절했습니다. 최신 내용을 확인하고 다시 시도해 주세요.'};
-   throw Error(messages[res.status]||'GitHub 요청을 완료하지 못했습니다.');
-  }
-  return res.json();
- }
- function onSubmit(work){
-  form.onsubmit=async e=>{
-   e.preventDefault();if(busy)return;lock(true);feedback.textContent='처리 중…';
-   try{await work();panel.close()}catch(error){feedback.textContent=error.message}finally{lock(false)}
-  };
- }
- staff.onclick=()=>{
-  if(token){token='';revision='';staff.textContent='운영진 로그인';openRoute();return}
-  show('운영진 로그인','로그인');
-  fields.innerHTML='<p>이 저장소에 쓰기 권한이 있는 운영진의 GitHub 토큰으로 로그인하세요. 토큰은 이 탭에서만 사용하며 새로고침하면 로그아웃됩니다.</p><p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">GitHub에서 토큰 만들기</a> · community 저장소만 선택하고 Contents 권한을 Read and write로 설정하세요.</p>';
-  const input=field('GitHub 개인 액세스 토큰','');input.type='password';input.required=true;input.autocomplete='off';input.focus();
-  onSubmit(async()=>{
-   const key=input.value.trim();
-   const repo=await request(api,key);
-   if(!repo.permissions?.push)throw Error('이 계정에는 운영진 쓰기 권한이 없습니다.');
-   const latest=await request(file+'?ref=main',key);
-   const data=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(latest.content),c=>c.charCodeAt(0))));
-   applyRecords(data);revision=latest.sha;token=key;staff.textContent='운영진 로그아웃';openRoute();
-  });
- };
- function openEditor(section,id,action){
-  if(!token)return;
-  const row=records[section].find(item=>item.id===id);
-  show(sectionNames[section]+' · '+action,action==='삭제'?'삭제하기':'공개 저장');
-  const deleting=action==='삭제';
-  let inputs=[];
-  if(deleting)fields.textContent='「'+row.fields[section==='notice'?1:0]+'」 글을 삭제할까요?';
-  else inputs=labels[section].map((name,i)=>{
-   const input=field(name,row?.fields[i]||'',i>=3);input.required=i<4;return input;
-  });
-  onSubmit(async()=>{
-   const updated=structuredClone(records);
-   const list=updated[section], index=list.findIndex(entry=>entry.id===id);
-   let target=id;
-   if(deleting)list.splice(index,1);
-   else{
-    const values=inputs.map(input=>input.value.trim());
-    if(values.slice(0,4).some(value=>!value))throw Error('필수 항목을 입력해 주세요.');
-    target=id||crypto.randomUUID();
-    const record={id:target,fields:values};
-    if(row)list[index]=record;else list.unshift(record);
-   }
-   const bytes=new TextEncoder().encode(JSON.stringify(updated,null,2)+'\n');
-   if(bytes.length>950000)throw Error('전체 기록의 저장 용량을 초과했습니다.');
-   const result=await request(file,token,{method:'PUT',body:JSON.stringify({branch:'main',sha:revision,message:sectionNames[section]+' '+action,content:btoa(Array.from(bytes,c=>String.fromCharCode(c)).join(''))})});
-   revision=result.content.sha;filter='전체';applyRecords(updated);navigate(section,deleting?undefined:target);
-  });
- }
  applyRecords(snapshot);
  if(location.protocol!=='file:'){
-  fetch('./records.json',{cache:'no-cache'}).then(response=>{
+  fetch('https://script.google.com/macros/s/AKfycbxwB07jfB0SoQ-6MOVmF3jO_knHi7H8KY9w_yXX8wu5lWumWXpgwFssgLZOS037scfQrQ/exec',{credentials:'omit'}).then(response=>{
    if(!response.ok)throw Error();return response.json();
-  }).then(data=>{if(!token)applyRecords(data)}).catch(()=>{
-   const warning=document.createElement('p');warning.textContent='최신 글을 불러오지 못했습니다. 기본 시안을 표시합니다.';root.querySelector('.footer').prepend(warning);
+  }).then(data=>{applyRecords(data)}).catch(()=>{
+   const warning=document.createElement('p');warning.textContent='최신 글을 불러오지 못했습니다. 기본 시안을 표시합니다. 새로고침해 다시 시도해 주세요.';root.querySelector('.footer').prepend(warning);
   });
  }
- staff.hidden=location.origin!=='https://juhyeon-05.github.io' || !location.pathname.startsWith('/community/');
 
 })();
 </script>
