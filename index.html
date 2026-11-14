@@ -67,11 +67,11 @@
   <header class="top">
     <div class="brand">THE ARCHIVE <span style="color:#aaa;font-size:10px"> / WORLD</span></div>
     <nav class="nav" aria-label="주요 메뉴">
-      <button data-page="home" class="active">HOME</button>
-      <button data-page="notice">NOTICE</button>
-      <button data-page="world">WORLD</button>
-      <button data-page="characters">CHARACTERS</button>
-      <button data-page="archive">ARCHIVE</button>
+      <button data-page="home" class="active">홈</button>
+      <button data-page="notice">공지</button>
+      <button data-page="world">세계관</button>
+      <button data-page="characters">인물</button>
+      <button data-page="archive">사건 연표</button>
     </nav>
   </header>
   <main class="content" id="wa-content" tabindex="-1"></main>
@@ -114,12 +114,12 @@
   if(page==='home')content.innerHTML=`
    <div class="hero"><div class="eyebrow">An encyclopedia of our world</div><h1>기록은 세계를<br>이해하는 또 하나의 방법.</h1><div class="intro">이곳은 하나의 세계와 그 안에 살아가는 사람들에 관한 기록을 모아둔 공간입니다. 천천히 둘러보며 이곳의 이야기를 발견해 보세요.</div>${button('세계관 둘러보기','world','btn dark')}　${button('캐릭터 도감','characters')}</div>
    <div class="homegrid"><section><div class="eyebrow">Latest notices</div><h2 style="margin-top:9px">새로운 소식</h2>${notices.map((n,i)=>`<div class="notice-row"><button data-action="notice-${i}">${n[1]}</button><time>${n[2]}</time></div>`).join('')}</section><section><div class="eyebrow">Introduction</div><h2 style="margin-top:9px">아카이브 안내</h2><p>세계관의 기초부터 인물들의 기록까지, 다양한 문서를 한곳에서 열람할 수 있습니다.</p><div class="line"></div><div class="eyebrow">Recently added</div><p style="color:#555">새로운 세계관 문서 3건<br>캐릭터 프로필 2건</p></section></div>
-   <div class="quick"><button data-action="world"><strong>WORLD ↗</strong><span>세계의 구조와 설정</span></button><button data-action="characters"><strong>CHARACTERS ↗</strong><span>이 세계에 살아가는 사람들</span></button><button data-action="archive"><strong>ARCHIVE ↗</strong><span>사건과 자료의 기록</span></button></div>`;
+   <div class="quick"><button data-action="world"><strong>세계관 ↗</strong><span>세계의 구조와 설정</span></button><button data-action="characters"><strong>인물 ↗</strong><span>이 세계에 살아가는 사람들</span></button><button data-action="archive"><strong>사건 연표 ↗</strong><span>사건과 자료의 기록</span></button></div>`;
   if(page==='notice')content.innerHTML=`<div class="sectionhead"><div><div class="eyebrow">News & Announcements</div><h1>공지사항</h1><p>홈페이지의 소식과 운영 관련 안내를 확인할 수 있습니다.</p></div></div><div class="doclist">${notices.map((n,i)=>`<div class="doc"><button data-action="notice-${i}"><small>${n[0]}</small><strong>${n[1]}</strong></button><time>${n[2]}</time></div>`).join('')}</div>`;
   if(page==='world')content.innerHTML=`<div class="eyebrow">World encyclopedia</div><h1>세계관</h1><p>이 세계를 구성하는 배경과 규칙, 역사에 관한 기록입니다.</p><div class="filters">${['전체','기초 설정','지리','사회','역사','설정'].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${worlds.filter(w=>filter==='전체'||w[1]===filter).map((w,i)=>`<div class="doc"><button data-action="world-${worlds.indexOf(w)}"><small>${w[1]}</small><strong>${w[0]}</strong><p style="margin:6px 0 0;font-size:11px">${w[2]}</p></button><span class="muted">↗</span></div>`).join('')}</div>`;
   if(page==='characters')content.innerHTML=`<div class="eyebrow">Character index</div><h1>인물 도감</h1><p>각자의 이야기를 가진 인물들의 기록을 모았습니다.</p><div class="filters">${['전체',...chars.map(c=>c[1])].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="chars">${chars.filter(c=>filter==='전체'||c[1]===filter).map(c=>`<button class="char" data-char="${c[0]}"><span class="initial">${c[3]}</span><strong>${c[0]}</strong><small>${c[1]} · ${c[2]}</small></button>`).join('')}</div>`;
   if(page==='profile'){const c=chars.find(x=>x[0]===char)||chars[0];const bio=biographies[chars.indexOf(c)];content.innerHTML=`<button class="back" data-action="characters">← 인물 도감으로</button><div class="profilegrid"><aside class="profilebox"><div class="eyebrow">Character profile</div><div class="initial" style="width:66px;height:66px;font-size:24px;margin:20px 0">${c[3]}</div><h2>${c[0]}</h2><p>${c[2]}</p><dl><dt>소속</dt><dd>${c[1]}</dd><dt>분류</dt><dd>주요 인물</dd><dt>상태</dt><dd>활동 중</dd></dl></aside><section><div class="eyebrow">Profile / ${String(chars.indexOf(c)+1).padStart(3,"0")}</div><h1>${c[0]}</h1><p style="font-family:Georgia,serif;font-size:17px">“${bio[0]}”</p><div class="line"></div><div class="profiletext"><h3>외관</h3><p>${bio[1]}</p></div><div class="profiletext"><h3>성격</h3><p>${bio[2]}</p></div><div class="profiletext"><h3>배경</h3><p>${bio[3]}</p></div><div class="profiletext"><h3>능력 및 기타</h3><p>${bio[4]}</p></div></section></div>`}
-  if(page==='archive')content.innerHTML=`<div class="eyebrow">Historical records</div><h1>기록 보관소</h1><p>사건과 자료, 시간의 흐름을 따라 정리한 기록입니다.</p><div class="filters">${['전체','연표','보고서','문서','자료'].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${archives.filter(a=>filter==='전체'||a[1]===filter).map((a,i)=>`<div class="doc"><button data-action="archive-${archives.indexOf(a)}"><small>${a[1]}</small><strong>${a[0]}</strong></button><time>${a[2]}</time></div>`).join('')}</div>`;
+  if(page==='archive')content.innerHTML=`<div class="eyebrow">Historical records</div><h1>사건 연표</h1><p>사건과 자료, 시간의 흐름을 따라 정리한 기록입니다.</p><div class="filters">${['전체','연표','보고서','문서','자료'].map(f=>`<button class="${filter===f?'selected':''}" data-filter="${f}">${f}</button>`).join('')}</div><div class="doclist">${archives.filter(a=>filter==='전체'||a[1]===filter).map((a,i)=>`<div class="doc"><button data-action="archive-${archives.indexOf(a)}"><small>${a[1]}</small><strong>${a[0]}</strong></button><time>${a[2]}</time></div>`).join('')}</div>`;
  }
  function navigate(section, id) {
   const path = section + (id === undefined ? '' : '/' + id);
@@ -127,7 +127,7 @@
   else location.hash = path;
  }
  const collections = {notice:notices, world:worlds, characters:chars, archive:archives};
- const sectionNames = {notice:'공지사항',world:'세계관',characters:'인물 도감',archive:'기록 보관소'};
+ const sectionNames = {notice:'공지사항',world:'세계관',characters:'인물 도감',archive:'사건 연표'};
  const readings = {
   notice:[
    '처음 방문했다면 세계관의 「세계의 기원」부터 읽어 보세요. 각 지역에서 만나는 사람들의 이야기는 인물 도감에서 이어집니다.',
