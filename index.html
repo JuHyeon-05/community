@@ -75,7 +75,7 @@
     </nav>
   </header>
   <main class="content" id="wa-content" tabindex="-1"></main>
-  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><a class="btn" id="staff" href="https://docs.google.com/spreadsheets/d/1yyDawgyRAHf-Ndcy98-jqS8Gpf4Z8l3vmh5luqKuq2o/edit" target="_blank" rel="noopener noreferrer" title="Google 계정으로 운영진 시트 열기">운영진 로그인 ↗</a><span>© 2026 · PROTOTYPE V1.0</span></footer>
+  <footer class="footer"><span>THE ARCHIVE — A WORLD TO EXPLORE</span><a class="btn" id="staff" href="https://script.google.com/macros/s/AKfycbyFUe8njkZTEV_1U4JGQV5FyBPL_aqi5WdUeuoCdDvlxr_aiRYKEyMHbwpfKLzxhoFfVg/exec" target="_blank" rel="noopener noreferrer" title="Google 계정으로 운영진 편집 화면 열기">운영진 로그인 ↗</a><span>© 2026 · PROTOTYPE V1.0</span></footer>
 </div>
 
 <script>
@@ -134,7 +134,7 @@
   const b=event.target.closest('button');if(!b)return;
   if(b.dataset.page)navigate(b.dataset.page);
   else if(b.dataset.char)navigate('characters',records.characters[Number(b.dataset.char)].id);
-  else if(b.dataset.filter){filter=b.textContent;openRoute();Array.from(content.querySelectorAll('[data-filter]')).find(el=>el.dataset.escapeText(filter)===filter)?.focus();}
+  else if(b.dataset.filter){filter=b.textContent;openRoute();Array.from(content.querySelectorAll('[data-filter]')).find(el=>el.textContent===filter)?.focus();}
   else if(b.dataset.action){const [section,id]=b.dataset.action.split('-');navigate(section,id===undefined?undefined:records[section][Number(id)].id);}
  });
  window.addEventListener('hashchange',openRoute);
